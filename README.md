@@ -4,6 +4,27 @@ A multi-tenant meeting-room booking app for IT companies. Each company gets its
 own workspace: see which rooms are free right now and book one for your meeting —
 no more double-booked rooms or awkward interruptions.
 
+## 🔗 Live demo
+
+- **App:** https://meet-rooms-ten.vercel.app
+- **API:** https://meetrooms-api.onrender.com
+
+**Demo login:** `demo@meetrooms.dev` / `password123` (invite code to test joining: `DEMO-ABCDE`)
+
+> The backend runs on Render's free tier, so the first request after a period of
+> inactivity may take ~30–50s to wake up.
+
+## Deployment
+
+| Layer    | Hosting            |
+| -------- | ------------------ |
+| Frontend | Vercel (`client/`) |
+| Backend  | Render (`server/`, via `render.yaml`) |
+| Database | Neon (PostgreSQL)  |
+
+The frontend reads the API base URL from `VITE_API_URL`; the backend allows the
+frontend origin via `CLIENT_ORIGIN`.
+
 ## Features
 
 - 🔐 **Company-based auth** — the first person registers their company and becomes
