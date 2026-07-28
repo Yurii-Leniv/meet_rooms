@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Prisma / SQLite
+server/prisma/*.db
+server/prisma/*.db-journal
+*.sqlite
+*.sqlite3
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
