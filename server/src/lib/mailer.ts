@@ -10,7 +10,6 @@ export interface MailInput {
 
 let etherealTransporter: Transporter | null = null;
 
-/** Lazily create a throwaway Ethereal test inbox for local development. */
 async function getEtherealTransporter(): Promise<Transporter> {
   if (etherealTransporter) return etherealTransporter;
   const account = await nodemailer.createTestAccount();
@@ -24,7 +23,6 @@ async function getEtherealTransporter(): Promise<Transporter> {
   return etherealTransporter;
 }
 
-/** Send via Resend's HTTP API. */
 async function sendViaResend(mail: MailInput): Promise<void> {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -46,10 +44,6 @@ async function sendViaResend(mail: MailInput): Promise<void> {
   }
 }
 
-/**
- * Sends an email. Uses Resend in production (when RESEND_API_KEY is set) and an
- * Ethereal test inbox otherwise. No-ops during tests.
- */
 export async function sendMail(mail: MailInput): Promise<void> {
   if (process.env.NODE_ENV === 'test') return;
 
@@ -66,7 +60,6 @@ export async function sendMail(mail: MailInput): Promise<void> {
     console.log(`📧 Sent "${mail.subject}" to ${mail.to}`);
     if (preview) console.log(`   Preview: ${preview}`);
   } catch (err) {
-    // Email must never break the request flow — just log it.
     console.error('📧 Failed to send email:', err);
   }
 }

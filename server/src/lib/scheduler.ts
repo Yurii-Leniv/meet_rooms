@@ -3,11 +3,6 @@ import { config } from '../config.js';
 import { sendMail } from './mailer.js';
 import { bookingReminderEmail } from './emails.js';
 
-/**
- * Finds bookings that start within the reminder window and haven't been
- * reminded yet, emails their owners, and marks them as reminded.
- * Exported so it can be triggered directly in tests.
- */
 export async function runReminderCheck(now: Date = new Date()): Promise<number> {
   const windowEnd = new Date(now.getTime() + config.reminderLeadMinutes * 60_000);
 
@@ -43,14 +38,13 @@ export async function runReminderCheck(now: Date = new Date()): Promise<number> 
   return due.length;
 }
 
-/** Starts the recurring reminder check (every minute). */
 export function startReminderScheduler(): void {
   const tick = () => {
     runReminderCheck().catch((err) =>
       console.error('Reminder scheduler error:', err),
     );
   };
-  tick(); // run once on boot
+  tick();
   setInterval(tick, 60_000);
   console.log(
     `⏰ Reminder scheduler started (lead time: ${config.reminderLeadMinutes} min)`,

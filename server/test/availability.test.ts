@@ -44,7 +44,6 @@ describe('room availability search', () => {
         endTime: hoursFromNow(2),
       });
 
-    // A window that overlaps the booking.
     const res = await request(app)
       .get(`/api/rooms/availability?from=${hoursFromNow(1.5)}&to=${hoursFromNow(2.5)}`)
       .set('Authorization', `Bearer ${admin.token}`);

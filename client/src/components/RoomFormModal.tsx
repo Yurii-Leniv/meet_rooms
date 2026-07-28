@@ -8,7 +8,7 @@ import { AMENITY_META } from '../lib/amenities';
 const ALL_AMENITIES = Object.keys(AMENITY_META);
 
 interface Props {
-  room: Room | null; // null = create mode
+  room: Room | null;
   onClose: () => void;
 }
 

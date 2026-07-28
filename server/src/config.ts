@@ -15,11 +15,8 @@ export const config = {
   jwtExpiresIn: '7d' as const,
   appUrl: process.env.APP_URL ?? 'http://localhost:5173',
   mail: {
-    // When RESEND_API_KEY is set, emails go out via Resend. Otherwise the
-    // mailer falls back to an Ethereal test inbox and logs a preview URL.
     resendApiKey: process.env.RESEND_API_KEY ?? '',
     from: process.env.MAIL_FROM ?? 'MeetRooms <onboarding@resend.dev>',
   },
-  // How many minutes before a meeting to send the reminder email.
   reminderLeadMinutes: Number(process.env.REMINDER_LEAD_MINUTES ?? 15),
 };

@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 const DEMO_INVITE_CODE = 'DEMO-ABCDE';
 const DEMO_FLOORS = 3;
 
-// Small meeting rooms inside one office building (name + floor).
 const rooms = [
   { name: 'Focus Room 1', capacity: 2, floor: 1, location: null, amenities: 'videoconf', imageUrl: 'https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?w=800&q=80' },
   { name: 'Focus Room 2', capacity: 2, floor: 1, location: null, amenities: 'videoconf', imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80' },
@@ -16,7 +15,6 @@ const rooms = [
   { name: 'Board Room', capacity: 12, floor: 3, location: null, amenities: 'projector,videoconf,whiteboard,tv', imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80' },
 ];
 
-/** Build a Date today at the given hour/minute (local time). */
 function todayAt(hour: number, minute = 0): Date {
   const d = new Date();
   d.setHours(hour, minute, 0, 0);
@@ -26,10 +24,8 @@ function todayAt(hour: number, minute = 0): Date {
 async function main() {
   console.log('🌱 Seeding database...');
 
-  // Reset everything (cascades from company down to bookings).
   await prisma.company.deleteMany();
 
-  // Demo company + its admin, joinable with a fixed invite code.
   const company = await prisma.company.create({
     data: { name: 'Demo Company', inviteCode: DEMO_INVITE_CODE, floors: DEMO_FLOORS },
   });
@@ -52,7 +48,6 @@ async function main() {
     );
   }
 
-  // A couple of sample bookings today so the dashboard isn't empty.
   const huddleA = createdRooms.find((r) => r.name === 'Huddle A')!;
   const board = createdRooms.find((r) => r.name === 'Board Room')!;
   await prisma.booking.createMany({

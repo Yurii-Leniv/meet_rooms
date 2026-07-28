@@ -96,7 +96,6 @@ export function SetupPage() {
               </span>
             </div>
 
-            {/* Column headers */}
             <div
               className={`mb-1 grid gap-2 px-1 text-xs font-medium text-slate-400 ${
                 floors > 1 ? 'grid-cols-[1fr_120px_40px]' : 'grid-cols-[1fr_40px]'

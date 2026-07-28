@@ -12,7 +12,7 @@ export interface Company {
   id: string;
   name: string;
   floors: number;
-  inviteCode?: string; // present for admins
+  inviteCode?: string;
 }
 
 export interface CompanyDetails {

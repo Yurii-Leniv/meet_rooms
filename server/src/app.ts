@@ -22,7 +22,6 @@ export function createApp() {
   app.use('/api/bookings', bookingsRouter);
   app.use('/api/companies', companiesRouter);
 
-  // 404 for unknown API routes
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });

@@ -9,10 +9,6 @@ export const companiesRouter = Router();
 
 companiesRouter.use(authenticate);
 
-/**
- * GET /api/companies/me
- * Returns the current user's company. Admins also get the member list.
- */
 companiesRouter.get(
   '/me',
   asyncHandler(async (req, res) => {
@@ -38,7 +34,6 @@ companiesRouter.get(
         id: company.id,
         name: company.name,
         floors: company.floors,
-        // Only the admin needs the invite code to share it.
         inviteCode: isAdmin ? company.inviteCode : undefined,
         roomCount: company._count.rooms,
         memberCount: company._count.users,
@@ -48,10 +43,6 @@ companiesRouter.get(
   }),
 );
 
-/**
- * POST /api/companies/regenerate-code  (ADMIN only)
- * Issues a fresh invite code, invalidating the old one.
- */
 companiesRouter.post(
   '/regenerate-code',
   requireAdmin,

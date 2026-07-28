@@ -56,7 +56,6 @@ export function DashboardPage() {
         </p>
       </div>
 
-      {/* Search controls */}
       <div className="mb-6 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-slate-500">Day</span>

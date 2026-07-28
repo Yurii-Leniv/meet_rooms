@@ -15,14 +15,12 @@ const credentialsSchema = {
   password: z.string().min(8, 'Password must be at least 8 characters'),
 };
 
-// Path 1: the first person from a company creates it and becomes ADMIN.
 const registerCompanySchema = z.object({
   ...credentialsSchema,
   companyName: z.string().min(2, 'Company name must be at least 2 characters'),
   floors: z.number().int().min(1).max(200).default(1),
 });
 
-// Path 2: a colleague joins an existing company with its invite code.
 const registerJoinSchema = z.object({
   ...credentialsSchema,
   inviteCode: z.string().min(1, 'Invite code is required'),
@@ -68,11 +66,6 @@ async function ensureEmailFree(email: string) {
   if (existing) throw conflict('An account with this email already exists');
 }
 
-/**
- * POST /api/auth/register/company
- * Creates a new company + its first (ADMIN) user, and returns an invite code
- * the admin can share with colleagues.
- */
 authRouter.post(
   '/register/company',
   asyncHandler(async (req, res) => {
@@ -107,10 +100,6 @@ authRouter.post(
   }),
 );
 
-/**
- * POST /api/auth/register/join
- * Joins an existing company via invite code as a regular MEMBER.
- */
 authRouter.post(
   '/register/join',
   asyncHandler(async (req, res) => {

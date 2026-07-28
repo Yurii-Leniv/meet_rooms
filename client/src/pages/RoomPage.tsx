@@ -32,7 +32,6 @@ export function RoomPage() {
   const [date, setDate] = useState(todayISODate());
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
 
-  // Booking-form fields live here so the week grid can prefill them.
   const [title, setTitle] = useState('');
   const [start, setStart] = useState('10:00');
   const [end, setEnd] = useState('11:00');
@@ -80,9 +79,7 @@ export function RoomPage() {
       </Link>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left column */}
         <div className="lg:col-span-2">
-          {/* Room info */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
             {room.imageUrl && (
               <img src={room.imageUrl} alt={room.name} className="h-56 w-full object-cover" />
@@ -110,7 +107,6 @@ export function RoomPage() {
             </div>
           </div>
 
-          {/* Schedule */}
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-bold">Schedule</h2>
@@ -169,7 +165,6 @@ export function RoomPage() {
           </div>
         </div>
 
-        {/* Booking form */}
         <div className="lg:col-span-1">
           <BookingForm
             roomId={room.id}

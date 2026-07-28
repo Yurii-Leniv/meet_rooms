@@ -38,7 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, restore the session from a stored token.
   useEffect(() => {
     const token = getToken();
     if (!token) {

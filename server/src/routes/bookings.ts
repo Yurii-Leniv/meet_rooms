@@ -10,7 +10,6 @@ import { bookingConfirmationEmail } from '../lib/emails.js';
 
 export const bookingsRouter = Router();
 
-// Every booking route requires authentication.
 bookingsRouter.use(authenticate);
 
 const createSchema = z.object({
@@ -20,10 +19,6 @@ const createSchema = z.object({
   endTime: z.string(),
 });
 
-/**
- * GET /api/bookings/mine
- * Lists the current user's upcoming and past bookings, newest first.
- */
 bookingsRouter.get(
   '/mine',
   asyncHandler(async (req, res) => {
@@ -36,11 +31,6 @@ bookingsRouter.get(
   }),
 );
 
-/**
- * POST /api/bookings
- * Creates a booking after validating the time window and checking for
- * conflicts with existing bookings in the same room.
- */
 bookingsRouter.post(
   '/',
   asyncHandler(async (req, res) => {
@@ -70,7 +60,6 @@ bookingsRouter.post(
       },
     });
 
-    // Fire-and-forget confirmation email (never blocks the response).
     void sendMail(
       bookingConfirmationEmail({
         userName: booking.user.name,
@@ -87,10 +76,6 @@ bookingsRouter.post(
   }),
 );
 
-/**
- * DELETE /api/bookings/:id
- * Cancels a booking. Owners can cancel their own; admins can cancel any.
- */
 bookingsRouter.delete(
   '/:id',
   asyncHandler(async (req, res) => {

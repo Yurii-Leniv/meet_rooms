@@ -3,7 +3,6 @@ import { verifyToken } from '../lib/auth.js';
 import { forbidden, unauthorized } from '../lib/http.js';
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: { userId: string; role: string; companyId: string };
@@ -11,7 +10,6 @@ declare global {
   }
 }
 
-/** Requires a valid Bearer token; attaches `req.user`. */
 export function authenticate(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
@@ -31,7 +29,6 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
   }
 }
 
-/** Requires the authenticated user to be a company ADMIN. Use after `authenticate`. */
 export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
   if (req.user?.role !== 'ADMIN') {
     return next(forbidden('Admin access required'));

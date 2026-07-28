@@ -22,7 +22,6 @@ interface RequestOptions {
   auth?: boolean;
 }
 
-/** Thin fetch wrapper that adds JSON headers, auth, and error handling. */
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, auth = true } = options;
 

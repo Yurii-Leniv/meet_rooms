@@ -51,7 +51,6 @@ export function AdminPage() {
 
       <InviteCodeCard code={companyQuery.data?.company.inviteCode} />
 
-      {/* Rooms management */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -122,7 +121,6 @@ export function AdminPage() {
         )}
       </section>
 
-      {/* Members */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="mb-4 text-lg font-bold">Members ({members.length})</h2>
         <ul className="divide-y divide-slate-100">

@@ -11,7 +11,7 @@ model Company {
   id         String   @id @default(cuid())
   name       String
   inviteCode String   @unique
-  floors     Int      @default(1) // number of floors in the office building
+  floors     Int      @default(1)
   createdAt  DateTime @default(now())
 
   users User[]
@@ -23,7 +23,7 @@ model User {
   name         String
   email        String    @unique
   passwordHash String
-  role         String    @default("MEMBER") // ADMIN | MEMBER (scoped to the company)
+  role         String    @default("MEMBER")
   createdAt    DateTime  @default(now())
   bookings     Booking[]
 
@@ -37,7 +37,7 @@ model Room {
   capacity  Int
   floor     Int
   location  String?
-  amenities String    @default("") // comma-separated: "tv,projector,whiteboard"
+  amenities String    @default("")
   imageUrl  String?
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
@@ -55,7 +55,7 @@ model Booking {
   startTime      DateTime
   endTime        DateTime
   createdAt      DateTime  @default(now())
-  reminderSentAt DateTime? // set once the reminder email has been sent
+  reminderSentAt DateTime?
 
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId String

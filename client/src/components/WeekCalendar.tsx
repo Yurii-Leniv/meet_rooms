@@ -10,7 +10,7 @@ const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR
 
 interface Props {
   roomId: string;
-  weekStart: Date; // Monday
+  weekStart: Date;
   currentUserId?: string;
   onSlotClick: (dayISO: string, hour: number) => void;
 }
@@ -32,7 +32,6 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[720px]">
-        {/* Day headers */}
         <div className="grid grid-cols-[56px_repeat(7,1fr)] border-b border-slate-200">
           <div />
           {days.map((day) => {
@@ -53,9 +52,7 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
           })}
         </div>
 
-        {/* Grid body */}
         <div className="relative grid grid-cols-[56px_repeat(7,1fr)]">
-          {/* Hour labels */}
           <div>
             {HOURS.map((h) => (
               <div key={h} className="relative" style={{ height: HOUR_PX }}>
@@ -66,7 +63,6 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
             ))}
           </div>
 
-          {/* Day columns */}
           {days.map((day) => {
             const dayISO = toISODate(day);
             const dayBookings = bookings.filter((b) =>
@@ -74,7 +70,6 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
             );
             return (
               <div key={dayISO} className="relative border-l border-slate-100">
-                {/* Clickable hour cells */}
                 {HOURS.map((h) => (
                   <button
                     key={h}
@@ -86,7 +81,6 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
                   />
                 ))}
 
-                {/* Booking blocks */}
                 {dayBookings.map((b) => {
                   const style = blockStyle(b);
                   if (!style) return null;
@@ -121,7 +115,6 @@ export function WeekCalendar({ roomId, weekStart, currentUserId, onSlotClick }: 
   );
 }
 
-/** Position a booking block within the 8:00–20:00 window (clamped). */
 function blockStyle(b: Booking): { top: number; height: number } | null {
   const start = new Date(b.startTime);
   const end = new Date(b.endTime);

@@ -1,4 +1,3 @@
-/** A small helper for throwing HTTP errors with a status code. */
 export class HttpError extends Error {
   constructor(public status: number, message: string) {
     super(message);

@@ -7,10 +7,8 @@ import { authenticate, requireAdmin } from '../middleware/authenticate.js';
 
 export const roomsRouter = Router();
 
-// All room routes require an authenticated user (scoped to their company).
 roomsRouter.use(authenticate);
 
-/** Shape a room for the API, turning the amenities CSV into an array. */
 function serializeRoom(room: {
   id: string;
   name: string;
@@ -42,11 +40,6 @@ const roomBodySchema = z.object({
   imageUrl: z.string().url().optional().nullable(),
 });
 
-/**
- * GET /api/rooms?at=<ISO>
- * Lists the company's active rooms. If `at` is provided, includes a `busy` flag
- * and the booking active at that instant, so the dashboard can show live status.
- */
 roomsRouter.get(
   '/',
   asyncHandler(async (req, res) => {
@@ -87,16 +80,10 @@ roomsRouter.get(
 );
 
 const availabilityQuerySchema = z.object({
-  from: z.string(), // ISO timestamp
-  to: z.string(), // ISO timestamp
+  from: z.string(),
+  to: z.string(),
 });
 
-/**
- * GET /api/rooms/availability?from=<ISO>&to=<ISO>
- * Returns every active room in the company with an `available` flag for the
- * requested time window, plus the conflicting booking when it's busy.
- * This powers the "find me a free room at this time" search.
- */
 roomsRouter.get(
   '/availability',
   asyncHandler(async (req, res) => {
@@ -147,10 +134,6 @@ roomsRouter.get(
 
 const dayQuerySchema = z.object({ date: z.string().optional() });
 
-/**
- * GET /api/rooms/:id?date=YYYY-MM-DD
- * Returns a single room (from the user's company) plus its bookings for the day.
- */
 roomsRouter.get(
   '/:id',
   asyncHandler(async (req, res) => {
@@ -186,15 +169,10 @@ roomsRouter.get(
 );
 
 const rangeQuerySchema = z.object({
-  from: z.string(), // YYYY-MM-DD (inclusive)
-  to: z.string(), // YYYY-MM-DD (exclusive)
+  from: z.string(),
+  to: z.string(),
 });
 
-/**
- * GET /api/rooms/:id/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD
- * Returns all bookings for a room that overlap the [from, to) range —
- * used by the weekly calendar view.
- */
 roomsRouter.get(
   '/:id/bookings',
   asyncHandler(async (req, res) => {
@@ -222,10 +200,6 @@ roomsRouter.get(
   }),
 );
 
-/**
- * POST /api/rooms  (ADMIN only)
- * Creates a room in the admin's company.
- */
 roomsRouter.post(
   '/',
   requireAdmin,
@@ -250,10 +224,6 @@ const bulkBodySchema = z.object({
   rooms: z.array(roomBodySchema).min(1, 'Add at least one room').max(100),
 });
 
-/**
- * POST /api/rooms/bulk  (ADMIN only)
- * Creates several rooms at once — used by the post-registration setup wizard.
- */
 roomsRouter.post(
   '/bulk',
   requireAdmin,
@@ -278,10 +248,6 @@ roomsRouter.post(
   }),
 );
 
-/**
- * PATCH /api/rooms/:id  (ADMIN only)
- * Updates a room belonging to the admin's company.
- */
 roomsRouter.patch(
   '/:id',
   requireAdmin,
@@ -307,10 +273,6 @@ roomsRouter.patch(
   }),
 );
 
-/**
- * DELETE /api/rooms/:id  (ADMIN only)
- * Removes a room (and its bookings, via cascade) from the admin's company.
- */
 roomsRouter.delete(
   '/:id',
   requireAdmin,

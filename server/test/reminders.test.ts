@@ -20,7 +20,6 @@ async function makeBooking(startISO: string, endISO: string) {
 
 describe('reminder scheduler', () => {
   it('reminds bookings starting within the lead window and is idempotent', async () => {
-    // Starts in 10 minutes — inside the default 15-minute window.
     const booking = await makeBooking(
       new Date(Date.now() + 10 * 60_000).toISOString(),
       new Date(Date.now() + 40 * 60_000).toISOString(),
@@ -32,13 +31,12 @@ describe('reminder scheduler', () => {
     const after = await prisma.booking.findUnique({ where: { id: booking.id } });
     expect(after?.reminderSentAt).not.toBeNull();
 
-    // Running again must not remind the same booking twice.
     const again = await runReminderCheck();
     expect(again).toBe(0);
   });
 
   it('does not remind bookings outside the lead window', async () => {
-    await makeBooking(hoursFromNow(3), hoursFromNow(4)); // far in the future
+    await makeBooking(hoursFromNow(3), hoursFromNow(4));
     const sent = await runReminderCheck();
     expect(sent).toBe(0);
   });

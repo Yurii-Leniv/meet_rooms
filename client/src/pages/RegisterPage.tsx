@@ -29,7 +29,7 @@ export function RegisterPage() {
     try {
       if (mode === 'create') {
         await registerCompany({ name, email, password, companyName, floors });
-        navigate('/setup', { replace: true }); // new admins set up their rooms
+        navigate('/setup', { replace: true });
       } else {
         await joinCompany({ name, email, password, inviteCode });
         navigate('/', { replace: true });
@@ -54,7 +54,6 @@ export function RegisterPage() {
         </>
       }
     >
-      {/* Mode switch */}
       <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
         <TabButton active={mode === 'create'} onClick={() => setMode('create')}>
           🏢 Create company

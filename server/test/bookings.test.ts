@@ -62,13 +62,11 @@ describe('bookings', () => {
     const created = await book(admin.token, roomId, 'Mine', hoursFromNow(1), hoursFromNow(2));
     const bookingId = created.body.booking.id;
 
-    // A different member (not owner, not admin) cannot cancel it.
     const blocked = await request(app)
       .delete(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${member.token}`);
     expect(blocked.status).toBe(403);
 
-    // The owner can.
     const ok = await request(app)
       .delete(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${admin.token}`);

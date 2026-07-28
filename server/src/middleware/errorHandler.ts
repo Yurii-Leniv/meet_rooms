@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { HttpError } from '../lib/http.js';
 
-/** Central error handler — turns thrown errors into JSON responses. */
 export function errorHandler(
   err: unknown,
   _req: Request,
@@ -27,7 +26,6 @@ export function errorHandler(
   return res.status(500).json({ error: 'Internal server error' });
 }
 
-/** Wraps an async route handler so rejected promises reach the error handler. */
 export function asyncHandler<T extends (...args: any[]) => Promise<unknown>>(fn: T) {
   return (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next).catch(next);

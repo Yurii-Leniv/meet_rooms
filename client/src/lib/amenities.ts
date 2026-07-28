@@ -1,4 +1,3 @@
-/** Human labels and emoji for room amenities. */
 export const AMENITY_META: Record<string, { label: string; icon: string }> = {
   tv: { label: 'TV screen', icon: '📺' },
   projector: { label: 'Projector', icon: '📽️' },

@@ -1,10 +1,6 @@
 import { prisma } from '../prisma.js';
 import { badRequest } from './http.js';
 
-/**
- * Validates a booking time window and returns parsed Date objects.
- * Rules: valid ISO dates, end after start, not in the past, max 8h long.
- */
 export function parseBookingWindow(startTime: string, endTime: string) {
   const start = new Date(startTime);
   const end = new Date(endTime);
@@ -26,11 +22,6 @@ export function parseBookingWindow(startTime: string, endTime: string) {
   return { start, end };
 }
 
-/**
- * Returns true if the given time window overlaps any existing booking for
- * the room. Two intervals overlap when start < otherEnd AND end > otherStart.
- * `excludeBookingId` lets you ignore a booking (useful when editing).
- */
 export async function hasConflict(
   roomId: string,
   start: Date,

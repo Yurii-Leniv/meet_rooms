@@ -71,7 +71,6 @@ export function Layout() {
             </button>
           </div>
         </div>
-        {/* Mobile nav */}
         <nav className="flex items-center gap-1 border-t border-slate-100 px-4 py-2 sm:hidden">
           <NavLink to="/" end className={navClass}>
             Rooms

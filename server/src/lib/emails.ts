@@ -22,7 +22,6 @@ function formatWhen(start: Date, end: Date): string {
   return `${date}, ${time(start)}–${time(end)}`;
 }
 
-/** Wrap content in a simple, email-client-friendly HTML shell. */
 function shell(heading: string, bodyHtml: string): string {
   return `
   <div style="font-family:Arial,Helvetica,sans-serif;background:#f1f5f9;padding:24px">
