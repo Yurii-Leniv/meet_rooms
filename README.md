@@ -14,6 +14,7 @@ no more double-booked rooms or awkward interruptions.
 - ✅ Create a booking with automatic **conflict prevention**
 - 🙋 "My bookings" view (upcoming / past) with cancellation
 - 🛠️ **Admin panel** — manage rooms (add / edit / delete), invite code, and members
+- 📧 **Email notifications** — booking confirmation + a reminder before the meeting
 - 🧪 Backend test suite (Vitest + Supertest)
 
 ## Tech stack
@@ -76,6 +77,18 @@ running.
 cd server
 npm test
 ```
+
+## Email notifications
+
+- A **confirmation** email is sent when a booking is created.
+- A **reminder** email is sent ~15 minutes before the meeting starts (an
+  in-process scheduler checks every minute; `REMINDER_LEAD_MINUTES` is
+  configurable).
+
+In production, set `RESEND_API_KEY` (and a verified `MAIL_FROM`) to send via
+[Resend](https://resend.com). With no key set, emails go to a local
+[Ethereal](https://ethereal.email) test inbox and a preview URL is logged — great
+for development.
 
 ## How registration works
 

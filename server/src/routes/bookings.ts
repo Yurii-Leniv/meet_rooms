@@ -5,6 +5,8 @@ import { conflict, forbidden, notFound } from '../lib/http.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { hasConflict, parseBookingWindow } from '../lib/bookings.js';
+import { sendMail } from '../lib/mailer.js';
+import { bookingConfirmationEmail } from '../lib/emails.js';
 
 export const bookingsRouter = Router();
 
@@ -62,8 +64,24 @@ bookingsRouter.post(
         startTime: start,
         endTime: end,
       },
-      include: { room: { select: { id: true, name: true, floor: true } } },
+      include: {
+        room: { select: { id: true, name: true, floor: true } },
+        user: { select: { name: true, email: true } },
+      },
     });
+
+    // Fire-and-forget confirmation email (never blocks the response).
+    void sendMail(
+      bookingConfirmationEmail({
+        userName: booking.user.name,
+        userEmail: booking.user.email,
+        roomName: booking.room.name,
+        floor: booking.room.floor,
+        title: booking.title,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+      }),
+    );
 
     res.status(201).json({ booking });
   }),

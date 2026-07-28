@@ -49,11 +49,12 @@ model Room {
 }
 
 model Booking {
-  id        String   @id @default(cuid())
-  title     String
-  startTime DateTime
-  endTime   DateTime
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  title          String
+  startTime      DateTime
+  endTime        DateTime
+  createdAt      DateTime  @default(now())
+  reminderSentAt DateTime? // set once the reminder email has been sent
 
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId String
