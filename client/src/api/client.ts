@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'meetrooms.token';
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
@@ -32,7 +33,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${API_BASE}/api${path}`, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
