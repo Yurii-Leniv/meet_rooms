@@ -5,6 +5,7 @@ import { config } from '../config.js';
 export interface JwtPayload {
   userId: string;
   role: string;
+  companyId: string;
 }
 
 export function hashPassword(password: string): Promise<string> {

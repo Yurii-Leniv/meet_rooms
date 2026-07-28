@@ -45,7 +45,9 @@ bookingsRouter.post(
     const { roomId, title, startTime, endTime } = createSchema.parse(req.body);
     const { start, end } = parseBookingWindow(startTime, endTime);
 
-    const room = await prisma.room.findUnique({ where: { id: roomId } });
+    const room = await prisma.room.findFirst({
+      where: { id: roomId, companyId: req.user!.companyId },
+    });
     if (!room || !room.isActive) throw notFound('Room not found');
 
     if (await hasConflict(roomId, start, end)) {

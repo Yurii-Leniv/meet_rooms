@@ -3,8 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Company {
+  id         String   @id @default(cuid())
+  name       String
+  inviteCode String   @unique
+  createdAt  DateTime @default(now())
+
+  users User[]
+  rooms Room[]
 }
 
 model User {
@@ -12,9 +22,12 @@ model User {
   name         String
   email        String    @unique
   passwordHash String
-  role         String    @default("USER") // USER | ADMIN
+  role         String    @default("MEMBER") // ADMIN | MEMBER (scoped to the company)
   createdAt    DateTime  @default(now())
   bookings     Booking[]
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
 }
 
 model Room {
@@ -28,6 +41,11 @@ model Room {
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
   bookings  Booking[]
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  @@index([companyId])
 }
 
 model Booking {

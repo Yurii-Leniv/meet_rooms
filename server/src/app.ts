@@ -4,6 +4,7 @@ import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
 import { roomsRouter } from './routes/rooms.js';
 import { bookingsRouter } from './routes/bookings.js';
+import { companiesRouter } from './routes/companies.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 export function createApp() {
@@ -19,6 +20,7 @@ export function createApp() {
   app.use('/api/auth', authRouter);
   app.use('/api/rooms', roomsRouter);
   app.use('/api/bookings', bookingsRouter);
+  app.use('/api/companies', companiesRouter);
 
   // 404 for unknown API routes
   app.use('/api', (_req, res) => {

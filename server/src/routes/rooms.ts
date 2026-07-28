@@ -3,8 +3,12 @@ import { z } from 'zod';
 import { prisma } from '../prisma.js';
 import { notFound } from '../lib/http.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { authenticate, requireAdmin } from '../middleware/authenticate.js';
 
 export const roomsRouter = Router();
+
+// All room routes require an authenticated user (scoped to their company).
+roomsRouter.use(authenticate);
 
 /** Shape a room for the API, turning the amenities CSV into an array. */
 function serializeRoom(room: {
@@ -29,10 +33,19 @@ function serializeRoom(room: {
   };
 }
 
+const roomBodySchema = z.object({
+  name: z.string().min(1, 'Name is required').max(60),
+  capacity: z.number().int().min(1).max(1000),
+  floor: z.number().int().min(-5).max(200),
+  location: z.string().max(120).optional().nullable(),
+  amenities: z.array(z.enum(['tv', 'projector', 'whiteboard', 'videoconf'])).default([]),
+  imageUrl: z.string().url().optional().nullable(),
+});
+
 /**
  * GET /api/rooms?at=<ISO>
- * Lists all active rooms. If `at` is provided, includes a `busy` flag and the
- * booking that is active at that instant, so the dashboard can show live status.
+ * Lists the company's active rooms. If `at` is provided, includes a `busy` flag
+ * and the booking active at that instant, so the dashboard can show live status.
  */
 roomsRouter.get(
   '/',
@@ -41,7 +54,7 @@ roomsRouter.get(
     const instant = Number.isNaN(at.getTime()) ? new Date() : at;
 
     const rooms = await prisma.room.findMany({
-      where: { isActive: true },
+      where: { companyId: req.user!.companyId, isActive: true },
       orderBy: [{ floor: 'asc' }, { name: 'asc' }],
       include: {
         bookings: {
@@ -73,20 +86,20 @@ roomsRouter.get(
   }),
 );
 
-const dayQuerySchema = z.object({
-  date: z.string().optional(), // YYYY-MM-DD
-});
+const dayQuerySchema = z.object({ date: z.string().optional() });
 
 /**
  * GET /api/rooms/:id?date=YYYY-MM-DD
- * Returns a single room plus all bookings for the given calendar day.
+ * Returns a single room (from the user's company) plus its bookings for the day.
  */
 roomsRouter.get(
   '/:id',
   asyncHandler(async (req, res) => {
     const { date } = dayQuerySchema.parse(req.query);
 
-    const room = await prisma.room.findUnique({ where: { id: req.params.id } });
+    const room = await prisma.room.findFirst({
+      where: { id: req.params.id, companyId: req.user!.companyId },
+    });
     if (!room) throw notFound('Room not found');
 
     const day = date ? new Date(`${date}T00:00:00`) : new Date();
@@ -110,5 +123,76 @@ roomsRouter.get(
       date: dayStart.toISOString().slice(0, 10),
       bookings,
     });
+  }),
+);
+
+/**
+ * POST /api/rooms  (ADMIN only)
+ * Creates a room in the admin's company.
+ */
+roomsRouter.post(
+  '/',
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const body = roomBodySchema.parse(req.body);
+    const room = await prisma.room.create({
+      data: {
+        name: body.name,
+        capacity: body.capacity,
+        floor: body.floor,
+        location: body.location ?? null,
+        amenities: body.amenities.join(','),
+        imageUrl: body.imageUrl ?? null,
+        companyId: req.user!.companyId,
+      },
+    });
+    res.status(201).json({ room: serializeRoom(room) });
+  }),
+);
+
+/**
+ * PATCH /api/rooms/:id  (ADMIN only)
+ * Updates a room belonging to the admin's company.
+ */
+roomsRouter.patch(
+  '/:id',
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const existing = await prisma.room.findFirst({
+      where: { id: req.params.id, companyId: req.user!.companyId },
+    });
+    if (!existing) throw notFound('Room not found');
+
+    const body = roomBodySchema.parse(req.body);
+    const room = await prisma.room.update({
+      where: { id: existing.id },
+      data: {
+        name: body.name,
+        capacity: body.capacity,
+        floor: body.floor,
+        location: body.location ?? null,
+        amenities: body.amenities.join(','),
+        imageUrl: body.imageUrl ?? null,
+      },
+    });
+    res.json({ room: serializeRoom(room) });
+  }),
+);
+
+/**
+ * DELETE /api/rooms/:id  (ADMIN only)
+ * Removes a room (and its bookings, via cascade) from the admin's company.
+ */
+roomsRouter.delete(
+  '/:id',
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const existing = await prisma.room.findFirst({
+      where: { id: req.params.id, companyId: req.user!.companyId },
+    });
+    if (!existing) throw notFound('Room not found');
+
+    await prisma.room.delete({ where: { id: existing.id } });
+    res.status(204).send();
   }),
 );
