@@ -126,6 +126,43 @@ roomsRouter.get(
   }),
 );
 
+const rangeQuerySchema = z.object({
+  from: z.string(), // YYYY-MM-DD (inclusive)
+  to: z.string(), // YYYY-MM-DD (exclusive)
+});
+
+/**
+ * GET /api/rooms/:id/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD
+ * Returns all bookings for a room that overlap the [from, to) range —
+ * used by the weekly calendar view.
+ */
+roomsRouter.get(
+  '/:id/bookings',
+  asyncHandler(async (req, res) => {
+    const { from, to } = rangeQuerySchema.parse(req.query);
+
+    const room = await prisma.room.findFirst({
+      where: { id: req.params.id, companyId: req.user!.companyId },
+    });
+    if (!room) throw notFound('Room not found');
+
+    const rangeStart = new Date(`${from}T00:00:00`);
+    const rangeEnd = new Date(`${to}T00:00:00`);
+
+    const bookings = await prisma.booking.findMany({
+      where: {
+        roomId: room.id,
+        startTime: { lt: rangeEnd },
+        endTime: { gt: rangeStart },
+      },
+      orderBy: { startTime: 'asc' },
+      include: { user: { select: { id: true, name: true } } },
+    });
+
+    res.json({ bookings });
+  }),
+);
+
 /**
  * POST /api/rooms  (ADMIN only)
  * Creates a room in the admin's company.
