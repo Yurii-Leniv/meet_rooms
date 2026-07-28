@@ -9,9 +9,11 @@ no more double-booked rooms or awkward interruptions.
 - 🔐 **Company-based auth** — the first person registers their company and becomes
   its admin; colleagues join with a shareable **invite code**
 - 🧭 **Multi-tenancy** — every company only sees its own rooms, bookings, and members
-- 🗺️ Dashboard with all rooms and their live **free / busy** status, search & filter
+- 🧙 **Setup wizard** — new owners enter their office's floor count and add rooms
+- 🔎 **Availability search** — pick a day, start time, and duration to instantly
+  see which rooms are free, then book the slot in one click
 - 📅 Per-room schedule with **day** and **week calendar** views
-- ✅ Create a booking with automatic **conflict prevention**
+- ✅ Automatic **conflict prevention** on every booking
 - 🙋 "My bookings" view (upcoming / past) with cancellation
 - 🛠️ **Admin panel** — manage rooms (add / edit / delete), invite code, and members
 - 📧 **Email notifications** — booking confirmation + a reminder before the meeting

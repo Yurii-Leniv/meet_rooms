@@ -7,12 +7,22 @@ import { DashboardPage } from './pages/DashboardPage';
 import { RoomPage } from './pages/RoomPage';
 import { MyBookingsPage } from './pages/MyBookingsPage';
 import { AdminPage } from './pages/AdminPage';
+import { SetupPage } from './pages/SetupPage';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      <Route
+        path="/setup"
+        element={
+          <ProtectedRoute>
+            <SetupPage />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         element={

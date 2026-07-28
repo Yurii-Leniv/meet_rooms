@@ -19,6 +19,7 @@ const credentialsSchema = {
 const registerCompanySchema = z.object({
   ...credentialsSchema,
   companyName: z.string().min(2, 'Company name must be at least 2 characters'),
+  floors: z.number().int().min(1).max(200).default(1),
 });
 
 // Path 2: a colleague joins an existing company with its invite code.
@@ -48,8 +49,18 @@ function publicUser(user: {
   };
 }
 
-function publicCompany(company: { id: string; name: string; inviteCode: string }) {
-  return { id: company.id, name: company.name, inviteCode: company.inviteCode };
+function publicCompany(company: {
+  id: string;
+  name: string;
+  inviteCode: string;
+  floors: number;
+}) {
+  return {
+    id: company.id,
+    name: company.name,
+    inviteCode: company.inviteCode,
+    floors: company.floors,
+  };
 }
 
 async function ensureEmailFree(email: string) {
@@ -65,14 +76,15 @@ async function ensureEmailFree(email: string) {
 authRouter.post(
   '/register/company',
   asyncHandler(async (req, res) => {
-    const { name, email, password, companyName } = registerCompanySchema.parse(req.body);
+    const { name, email, password, companyName, floors } =
+      registerCompanySchema.parse(req.body);
     await ensureEmailFree(email);
 
     const inviteCode = await generateInviteCode(companyName);
 
     const { user, company } = await prisma.$transaction(async (tx) => {
       const company = await tx.company.create({
-        data: { name: companyName, inviteCode },
+        data: { name: companyName, inviteCode, floors },
       });
       const user = await tx.user.create({
         data: {

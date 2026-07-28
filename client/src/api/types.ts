@@ -11,12 +11,14 @@ export interface User {
 export interface Company {
   id: string;
   name: string;
+  floors: number;
   inviteCode?: string; // present for admins
 }
 
 export interface CompanyDetails {
   id: string;
   name: string;
+  floors: number;
   inviteCode?: string;
   roomCount: number;
   memberCount: number;
@@ -57,6 +59,11 @@ export interface CurrentBooking {
 export interface RoomWithStatus extends Room {
   busy: boolean;
   currentBooking: CurrentBooking | null;
+}
+
+export interface AvailabilityRoom extends Room {
+  available: boolean;
+  conflict: CurrentBooking | null;
 }
 
 export interface Booking {

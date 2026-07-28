@@ -24,7 +24,8 @@ type View = 'day' | 'week';
 
 export function RoomPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, company } = useAuth();
+  const floors = company?.floors ?? 1;
   const queryClient = useQueryClient();
 
   const [view, setView] = useState<View>('day');
@@ -89,7 +90,8 @@ export function RoomPage() {
             <div className="p-6">
               <h1 className="text-2xl font-extrabold">{room.name}</h1>
               <p className="mt-1 text-slate-500">
-                👥 {room.capacity} seats · Floor {room.floor}
+                👥 {room.capacity} seats
+                {floors > 1 ? ` · Floor ${room.floor}` : ''}
                 {room.location ? ` · ${room.location}` : ''}
               </p>
               {room.amenities.length > 0 && (

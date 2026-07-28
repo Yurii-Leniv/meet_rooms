@@ -56,6 +56,27 @@ export function weekdayShort(d: Date): string {
   return d.toLocaleDateString([], { weekday: 'short' });
 }
 
+/** Current time rounded up to the next half hour, as "HH:MM". */
+export function nextHalfHour(): string {
+  const d = new Date();
+  d.setSeconds(0, 0);
+  const m = d.getMinutes();
+  if (m > 30) {
+    d.setHours(d.getHours() + 1);
+    d.setMinutes(0);
+  } else if (m > 0) {
+    d.setMinutes(30);
+  }
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** ISO string for `date` + `time` + `durationMinutes`. */
+export function windowEndISO(date: string, time: string, durationMinutes: number): string {
+  const start = new Date(`${date}T${time}`);
+  return new Date(start.getTime() + durationMinutes * 60_000).toISOString();
+}
+
 /** True if two dates fall on the same calendar day. */
 export function isSameDay(a: Date, b: Date): boolean {
   return (

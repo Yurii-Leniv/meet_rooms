@@ -11,6 +11,7 @@ model Company {
   id         String   @id @default(cuid())
   name       String
   inviteCode String   @unique
+  floors     Int      @default(1) // number of floors in the office building
   createdAt  DateTime @default(now())
 
   users User[]

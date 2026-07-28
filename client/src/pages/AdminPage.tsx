@@ -38,6 +38,7 @@ export function AdminPage() {
 
   const rooms = roomsQuery.data?.rooms ?? [];
   const members = companyQuery.data?.members ?? [];
+  const floors = companyQuery.data?.company.floors ?? 1;
 
   return (
     <div className="space-y-8">
@@ -85,7 +86,8 @@ export function AdminPage() {
                   <div className="font-semibold">
                     {room.name}{' '}
                     <span className="ml-1 text-sm font-normal text-slate-400">
-                      Floor {room.floor} · {room.capacity} seats
+                      {floors > 1 ? `Floor ${room.floor} · ` : ''}
+                      {room.capacity} seats
                     </span>
                   </div>
                   <div className="text-sm text-slate-500">

@@ -20,6 +20,7 @@ interface AuthContextValue {
     email: string;
     password: string;
     companyName: string;
+    floors: number;
   }) => Promise<void>;
   joinCompany: (input: {
     name: string;
@@ -74,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string;
     password: string;
     companyName: string;
+    floors: number;
   }) {
     applyAuth(
       await api<AuthResponse>('/auth/register/company', {

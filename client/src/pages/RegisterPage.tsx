@@ -15,6 +15,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [floors, setFloors] = useState(1);
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -27,8 +28,8 @@ export function RegisterPage() {
     setSubmitting(true);
     try {
       if (mode === 'create') {
-        await registerCompany({ name, email, password, companyName });
-        navigate('/admin', { replace: true }); // new admins land on setup
+        await registerCompany({ name, email, password, companyName, floors });
+        navigate('/setup', { replace: true }); // new admins set up their rooms
       } else {
         await joinCompany({ name, email, password, inviteCode });
         navigate('/', { replace: true });
@@ -81,15 +82,28 @@ export function RegisterPage() {
         </Field>
 
         {mode === 'create' ? (
-          <Field label="Company name">
-            <input
-              required
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className={inputClass}
-              placeholder="Acme Inc."
-            />
-          </Field>
+          <>
+            <Field label="Company name">
+              <input
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className={inputClass}
+                placeholder="Acme Inc."
+              />
+            </Field>
+            <Field label="How many floors does your office have?">
+              <input
+                type="number"
+                required
+                min={1}
+                max={200}
+                value={floors}
+                onChange={(e) => setFloors(Math.max(1, Number(e.target.value)))}
+                className={inputClass}
+              />
+            </Field>
+          </>
         ) : (
           <Field label="Invite code">
             <input

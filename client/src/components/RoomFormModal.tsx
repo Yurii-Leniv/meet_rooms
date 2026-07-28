@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../api/client';
 import type { Room } from '../api/types';
+import { useAuth } from '../auth/AuthContext';
 import { AMENITY_META } from '../lib/amenities';
 
 const ALL_AMENITIES = Object.keys(AMENITY_META);
@@ -14,6 +15,8 @@ interface Props {
 export function RoomFormModal({ room, onClose }: Props) {
   const editing = Boolean(room);
   const queryClient = useQueryClient();
+  const { company } = useAuth();
+  const floors = company?.floors ?? 1;
 
   const [name, setName] = useState(room?.name ?? '');
   const [capacity, setCapacity] = useState(room?.capacity ?? 4);
@@ -77,10 +80,18 @@ export function RoomFormModal({ room, onClose }: Props) {
               <span className="mb-1 block text-sm font-medium text-slate-700">Capacity</span>
               <input type="number" min={1} required value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} className={input} />
             </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Floor</span>
-              <input type="number" required value={floor} onChange={(e) => setFloor(Number(e.target.value))} className={input} />
-            </label>
+            {floors > 1 && (
+              <label className="block">
+                <span className="mb-1 block text-sm font-medium text-slate-700">Floor</span>
+                <select value={floor} onChange={(e) => setFloor(Number(e.target.value))} className={input}>
+                  {Array.from({ length: floors }, (_, f) => f + 1).map((f) => (
+                    <option key={f} value={f}>
+                      Floor {f}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
 
           <label className="block">

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../prisma.js';
-import { notFound } from '../lib/http.js';
+import { badRequest, notFound } from '../lib/http.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { authenticate, requireAdmin } from '../middleware/authenticate.js';
 
@@ -35,8 +35,8 @@ function serializeRoom(room: {
 
 const roomBodySchema = z.object({
   name: z.string().min(1, 'Name is required').max(60),
-  capacity: z.number().int().min(1).max(1000),
-  floor: z.number().int().min(-5).max(200),
+  capacity: z.number().int().min(1).max(1000).default(4),
+  floor: z.number().int().min(0).max(200).default(1),
   location: z.string().max(120).optional().nullable(),
   amenities: z.array(z.enum(['tv', 'projector', 'whiteboard', 'videoconf'])).default([]),
   imageUrl: z.string().url().optional().nullable(),
@@ -83,6 +83,65 @@ roomsRouter.get(
     });
 
     res.json({ rooms: result, at: instant.toISOString() });
+  }),
+);
+
+const availabilityQuerySchema = z.object({
+  from: z.string(), // ISO timestamp
+  to: z.string(), // ISO timestamp
+});
+
+/**
+ * GET /api/rooms/availability?from=<ISO>&to=<ISO>
+ * Returns every active room in the company with an `available` flag for the
+ * requested time window, plus the conflicting booking when it's busy.
+ * This powers the "find me a free room at this time" search.
+ */
+roomsRouter.get(
+  '/availability',
+  asyncHandler(async (req, res) => {
+    const { from, to } = availabilityQuerySchema.parse(req.query);
+    const start = new Date(from);
+    const end = new Date(to);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+      throw badRequest('Invalid time window');
+    }
+
+    const rooms = await prisma.room.findMany({
+      where: { companyId: req.user!.companyId, isActive: true },
+      orderBy: [{ floor: 'asc' }, { name: 'asc' }],
+      include: {
+        bookings: {
+          where: { startTime: { lt: end }, endTime: { gt: start } },
+          include: { user: { select: { id: true, name: true } } },
+          orderBy: { startTime: 'asc' },
+          take: 1,
+        },
+      },
+    });
+
+    const result = rooms.map((room) => {
+      const conflict = room.bookings[0];
+      return {
+        ...serializeRoom(room),
+        available: !conflict,
+        conflict: conflict
+          ? {
+              id: conflict.id,
+              title: conflict.title,
+              startTime: conflict.startTime,
+              endTime: conflict.endTime,
+              user: conflict.user,
+            }
+          : null,
+      };
+    });
+
+    res.json({
+      rooms: result,
+      from: start.toISOString(),
+      to: end.toISOString(),
+    });
   }),
 );
 
@@ -184,6 +243,38 @@ roomsRouter.post(
       },
     });
     res.status(201).json({ room: serializeRoom(room) });
+  }),
+);
+
+const bulkBodySchema = z.object({
+  rooms: z.array(roomBodySchema).min(1, 'Add at least one room').max(100),
+});
+
+/**
+ * POST /api/rooms/bulk  (ADMIN only)
+ * Creates several rooms at once — used by the post-registration setup wizard.
+ */
+roomsRouter.post(
+  '/bulk',
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { rooms } = bulkBodySchema.parse(req.body);
+    const created = await prisma.$transaction(
+      rooms.map((body) =>
+        prisma.room.create({
+          data: {
+            name: body.name,
+            capacity: body.capacity,
+            floor: body.floor,
+            location: body.location ?? null,
+            amenities: body.amenities.join(','),
+            imageUrl: body.imageUrl ?? null,
+            companyId: req.user!.companyId,
+          },
+        }),
+      ),
+    );
+    res.status(201).json({ rooms: created.map(serializeRoom) });
   }),
 );
 

@@ -37,6 +37,7 @@ companiesRouter.get(
       company: {
         id: company.id,
         name: company.name,
+        floors: company.floors,
         // Only the admin needs the invite code to share it.
         inviteCode: isAdmin ? company.inviteCode : undefined,
         roomCount: company._count.rooms,
