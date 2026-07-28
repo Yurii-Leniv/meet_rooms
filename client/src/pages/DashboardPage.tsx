@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../api/client';
 import type { RoomWithStatus } from '../api/types';
 import { RoomCard } from '../components/RoomCard';
+import { useAuth } from '../auth/AuthContext';
 
 type Filter = 'all' | 'free' | 'busy';
 
 export function DashboardPage() {
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
 
@@ -80,6 +83,27 @@ export function DashboardPage() {
               className="h-72 animate-pulse rounded-2xl border border-slate-200 bg-white"
             />
           ))}
+        </div>
+      ) : rooms.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+          <div className="mb-3 text-4xl">🗂️</div>
+          {isAdmin ? (
+            <>
+              <p className="text-slate-600">
+                Your company has no meeting rooms yet. Add them so your team can start booking.
+              </p>
+              <Link
+                to="/admin"
+                className="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+              >
+                Set up rooms
+              </Link>
+            </>
+          ) : (
+            <p className="text-slate-600">
+              No meeting rooms yet. Ask your company admin to add them.
+            </p>
+          )}
         </div>
       ) : visible.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-slate-300 p-12 text-center text-slate-500">

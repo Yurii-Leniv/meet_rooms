@@ -9,7 +9,7 @@ function navClass({ isActive }: { isActive: boolean }): string {
 }
 
 export function Layout() {
-  const { user, logout } = useAuth();
+  const { user, company, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -35,6 +35,11 @@ export function Layout() {
                 Meet<span className="text-brand-600">Rooms</span>
               </span>
             </NavLink>
+            {company && (
+              <span className="hidden rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 md:inline">
+                {company.name}
+              </span>
+            )}
             <nav className="hidden items-center gap-1 sm:flex">
               <NavLink to="/" end className={navClass}>
                 Rooms
@@ -42,6 +47,11 @@ export function Layout() {
               <NavLink to="/my-bookings" className={navClass}>
                 My bookings
               </NavLink>
+              {isAdmin && (
+                <NavLink to="/admin" className={navClass}>
+                  Admin
+                </NavLink>
+              )}
             </nav>
           </div>
 
@@ -69,6 +79,11 @@ export function Layout() {
           <NavLink to="/my-bookings" className={navClass}>
             My bookings
           </NavLink>
+          {isAdmin && (
+            <NavLink to="/admin" className={navClass}>
+              Admin
+            </NavLink>
+          )}
         </nav>
       </header>
 

@@ -1,8 +1,33 @@
+export type Role = 'ADMIN' | 'MEMBER';
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'USER' | 'ADMIN';
+  role: Role;
+  companyId: string;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  inviteCode?: string; // present for admins
+}
+
+export interface CompanyDetails {
+  id: string;
+  name: string;
+  inviteCode?: string;
+  roomCount: number;
+  memberCount: number;
+}
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  createdAt: string;
 }
 
 export interface Room {
@@ -49,4 +74,5 @@ export interface Booking {
 export interface AuthResponse {
   token: string;
   user: User;
+  company: Company;
 }

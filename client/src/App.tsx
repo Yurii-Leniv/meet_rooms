@@ -6,6 +6,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { RoomPage } from './pages/RoomPage';
 import { MyBookingsPage } from './pages/MyBookingsPage';
+import { AdminPage } from './pages/AdminPage';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/rooms/:id" element={<RoomPage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
